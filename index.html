@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Novélia — Loja</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>emailjs.init("OQWTuSBNdiVTnDOFs");</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0d1f3c;--navy-dark:#08142a;--navy-deep:#060e1e;--navy-mid:#1a3358;
+  --navy-light:#e8ecf2;--navy-xlight:#f2f4f8;
+  --white:#ffffff;--off-white:#fafbfc;--light:#f4f6f9;--muted:#7a8fa8;--text:#0d1f3c;
+  --border:rgba(13,31,60,0.10);--border-strong:rgba(13,31,60,0.20);
+  --r:3px;--r-lg:6px;--r-pill:100px;
+  --font-display:'Playfair Display',serif;--font-body:'Barlow',sans-serif;--font-cond:'Barlow Condensed',sans-serif;
+}
+body{font-family:var(--font-body);background:var(--white);color:var(--text);min-height:100vh}
+.view{display:none}.view.active{display:block}
+
+/* TOPBAR */
+.topbar{background:var(--white);padding:0.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:1.5px solid var(--navy)}
+.topbar-logo{display:flex;align-items:center;gap:12px}
+.logo-n{font-family:var(--font-display);font-size:30px;font-weight:700;color:var(--navy);border:2px solid var(--navy);width:46px;height:46px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}
+.logo-n::after{content:'';position:absolute;top:3px;left:3px;right:-3px;bottom:-3px;border:1px solid rgba(13,31,60,0.25)}
+.logo-name{font-family:var(--font-display);font-size:19px;font-weight:600;color:var(--navy);letter-spacing:1px}
+.logo-since{font-family:var(--font-cond);font-size:10px;color:var(--muted);letter-spacing:3px;text-transform:uppercase}
+
+/* HERO */
+.hero{background:var(--white);padding:2.5rem 1.5rem 1.75rem;text-align:center;position:relative;overflow:hidden;border-bottom:1.5px solid var(--navy)}
+.hero::before{content:'N';position:absolute;font-family:var(--font-display);font-size:280px;font-weight:700;color:rgba(13,31,60,0.03);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;line-height:1}
+.hero-tag{font-family:var(--font-cond);font-size:11px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:0.5rem}
+.hero-title{font-family:var(--font-display);font-size:clamp(24px,4vw,42px);color:var(--navy);font-weight:700;line-height:1.1;margin-bottom:0.4rem}
+.hero-sub{font-size:13px;color:var(--muted);font-weight:300;letter-spacing:0.3px}
+
+/* LOADING */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4rem 1rem;gap:1rem}
+.spinner{width:36px;height:36px;border:3px solid var(--light);border-top-color:var(--navy);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading p{font-family:var(--font-cond);font-size:13px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+
+/* WEEK SECTION */
+.week-section{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+.section-label{font-family:var(--font-cond);font-size:11px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:0.4rem}
+.section-title{font-family:var(--font-display);font-size:24px;color:var(--navy);margin-bottom:1.5rem;padding-bottom:0.875rem;border-bottom:1.5px solid var(--navy)}
+
+/* LOOK GRID */
+.look-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start}
+@media(max-width:680px){.look-grid{grid-template-columns:1fr}}
+.look-img-wrap{position:relative;border-radius:var(--r-lg);overflow:hidden;background:var(--light);aspect-ratio:3/4}
+.look-img-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.look-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;color:var(--muted)}
+.look-img-placeholder span{font-size:48px;opacity:0.2}
+.look-img-placeholder p{font-size:13px;opacity:0.4}
+.week-badge{position:absolute;top:12px;left:12px;background:var(--white);color:var(--navy);border:1px solid var(--navy);font-family:var(--font-cond);font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:var(--r)}
+.new-badge{position:absolute;top:12px;right:12px;background:var(--navy);color:var(--white);font-family:var(--font-cond);font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:var(--r);font-weight:700}
+.look-desc{font-size:13px;color:var(--muted);line-height:1.7;margin-top:1rem;font-weight:300}
+
+/* PIECES */
+.pieces-side{display:flex;flex-direction:column;gap:0.875rem}
+.piece-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:0.875rem 1rem;cursor:pointer;transition:all 0.18s}
+.piece-card:hover{border-color:var(--navy);box-shadow:0 4px 16px rgba(30,58,95,0.1);transform:translateY(-1px)}
+.piece-card.selected{border:2px solid var(--navy);background:var(--navy-xlight)}
+.piece-card.out{opacity:0.5;cursor:not-allowed}
+.piece-card.out:hover{transform:none;box-shadow:none;border-color:var(--border)}
+.piece-top{display:flex;align-items:center;gap:10px}
+.piece-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;transition:all 0.18s;color:transparent}
+.piece-card.selected .piece-check{background:var(--navy);border-color:var(--navy);color:white}
+.piece-info{flex:1;min-width:0}
+.piece-name{font-family:var(--font-cond);font-size:14px;font-weight:700;color:var(--navy-deep);letter-spacing:0.5px;text-transform:uppercase}
+.piece-ref{font-size:11px;color:var(--muted);margin-top:1px}
+.piece-right{text-align:right;flex-shrink:0}
+.piece-price{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--navy)}
+.piece-stock{font-size:10px;font-family:var(--font-cond);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.sok{color:#2d7a4a}.slow{color:#c9761a}.sout{color:#c0392b}
+.sizes-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.sz-btn{padding:4px 9px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--font-cond);font-size:11px;font-weight:700;cursor:pointer;background:white;color:var(--navy-deep);transition:all 0.13s}
+.sz-btn:hover:not(.sz-no){border-color:var(--navy)}
+.sz-btn.sz-sel{background:var(--navy);color:white;border-color:var(--navy)}
+.sz-btn.sz-no{opacity:0.28;cursor:not-allowed;text-decoration:line-through}
+
+/* ENTREGA NA LOJA */
+.entrega-section{border-top:1.5px solid var(--navy);margin-top:0.875rem;padding-top:0.875rem}
+.entrega-section-title{font-family:var(--font-cond);font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:0.625rem}
+.entrega-opts-row{display:flex;gap:8px}
+.entrega-opt{flex:1;display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-lg);cursor:pointer;transition:all 0.15s;background:white}
+.entrega-opt:hover{border-color:var(--navy)}
+.entrega-opt.sel{border:2px solid var(--navy);background:var(--navy-xlight)}
+.entrega-opt input[type=radio]{accent-color:var(--navy);width:15px;height:15px;flex-shrink:0}
+.entrega-opt-icon{font-size:18px;flex-shrink:0}
+.entrega-opt-name{font-family:var(--font-cond);font-size:11px;font-weight:700;color:var(--navy);letter-spacing:0.3px;line-height:1.3}
+.entrega-opt-desc{font-size:10px;color:var(--muted);margin-top:1px}
+
+/* CONJUNTO BAR */
+.conjunto-bar{background:var(--white);border:1.5px solid var(--navy);border-radius:var(--r-lg);padding:1rem 1.25rem;margin-top:0.5rem}
+.conj-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.875rem}
+.conj-label{font-family:var(--font-cond);font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+.conj-price{font-family:var(--font-display);font-size:22px;color:var(--navy);font-weight:700}
+.conj-portes{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:0.3px}
+.conj-btns{display:flex;gap:8px;margin-top:0.875rem}
+.btn-all{background:transparent;border:1px solid var(--border-strong);color:var(--navy);padding:8px 14px;font-family:var(--font-cond);font-size:12px;letter-spacing:1px;cursor:pointer;border-radius:var(--r);transition:all 0.2s;flex:1}
+.btn-all:hover{border-color:var(--navy);background:var(--navy-xlight)}
+.btn-comprar{background:var(--navy);color:var(--white);border:none;padding:11px 22px;font-family:var(--font-cond);font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:var(--r);transition:all 0.2s;white-space:nowrap;flex:2}
+.btn-comprar:hover:not(:disabled){background:var(--navy-mid);transform:translateY(-1px)}
+.btn-comprar:disabled{opacity:0.35;cursor:not-allowed;transform:none}
+
+/* CHECKOUT */
+.checkout-wrap{max-width:580px;margin:0 auto;padding:2rem 1.5rem}
+.ck-header{text-align:center;margin-bottom:1.75rem}
+.ck-header h2{font-family:var(--font-display);font-size:26px;color:var(--navy-deep);margin-bottom:0.25rem}
+.ck-header p{font-size:13px;color:var(--muted)}
+.order-box{background:var(--navy);border-radius:var(--r-lg);padding:1.25rem;margin-bottom:1.25rem}
+.order-box-title{font-family:var(--font-cond);font-size:10px;letter-spacing:3px;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-bottom:0.875rem}
+.order-line{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.07)}
+.order-line:last-child{border-bottom:none}
+.order-line-name{font-size:13px;color:var(--white);font-weight:300}
+.order-line-sz{font-family:var(--font-cond);font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.order-line-price{font-family:var(--font-display);font-size:15px;color:#d4af7a}
+.order-sep{border:none;border-top:1px solid rgba(255,255,255,0.12);margin:8px 0}
+.order-portes-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+.order-total-row{display:flex;justify-content:space-between;align-items:baseline}
+.order-total-lbl{font-family:var(--font-cond);font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.order-total-val{font-family:var(--font-display);font-size:22px;color:white;font-weight:700}
+
+/* ENTREGA RESUMO NO CHECKOUT */
+.entrega-resumo{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--navy-xlight);border:1.5px solid var(--navy);border-radius:var(--r-lg);margin-bottom:1rem}
+.entrega-resumo-icon{font-size:20px}
+.entrega-resumo-nome{font-family:var(--font-cond);font-size:13px;font-weight:700;color:var(--navy);letter-spacing:0.5px}
+.entrega-resumo-desc{font-size:11px;color:var(--muted);margin-top:1px}
+
+/* FORM CARDS */
+.form-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;margin-bottom:1rem}
+.form-card-title{font-family:var(--font-cond);font-size:10px;letter-spacing:3px;color:var(--navy);text-transform:uppercase;margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:2px solid var(--light)}
+.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.fg:last-child{margin-bottom:0}
+.fg label{font-family:var(--font-cond);font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;font-weight:600}
+.fg input,.fg select,.fg textarea{border:1px solid var(--border);border-radius:var(--r);padding:9px 11px;font-size:14px;font-family:var(--font-body);color:var(--text);background:var(--off-white);outline:none;transition:border-color 0.15s;width:100%}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--navy);background:white}
+.fg textarea{resize:vertical;min-height:65px}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.fg-row{grid-template-columns:1fr}}
+
+/* LOJA INFO */
+.loja-info-box{display:flex;align-items:flex-start;gap:12px;padding:14px;background:var(--navy-xlight);border-radius:var(--r-lg);border:1px solid var(--border)}
+.loja-info-icon{font-size:22px;flex-shrink:0;margin-top:2px}
+.loja-info-addr{font-family:var(--font-cond);font-size:14px;font-weight:700;color:var(--navy);letter-spacing:0.3px}
+.loja-info-sub{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.6}
+
+/* PAGAMENTO */
+.pay-opts{display:flex;flex-direction:column;gap:8px}
+.pay-opt{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--border);border-radius:var(--r-lg);cursor:pointer;transition:all 0.15s}
+.pay-opt:hover{border-color:var(--navy);background:var(--navy-xlight)}
+.pay-opt.sel{border:2px solid var(--navy);background:var(--navy-xlight)}
+.pay-opt input[type=radio]{accent-color:var(--navy);width:16px;height:16px;flex-shrink:0}
+.pay-opt-name{font-family:var(--font-cond);font-size:13px;font-weight:700;letter-spacing:0.5px;color:var(--navy-deep)}
+.pay-opt-desc{font-size:11px;color:var(--muted);margin-top:1px}
+.pay-opt-icon{margin-left:auto;font-size:20px}
+
+.btn-submit{width:100%;background:var(--navy);color:white;border:none;padding:14px;font-family:var(--font-cond);font-size:14px;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;border-radius:var(--r-lg);transition:all 0.2s;margin-top:1rem}
+.btn-submit:hover{background:var(--navy-mid)}
+.btn-back{background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 18px;font-family:var(--font-cond);font-size:12px;letter-spacing:1px;cursor:pointer;border-radius:var(--r);margin-bottom:1.25rem;transition:all 0.2s}
+.btn-back:hover{border-color:var(--navy);color:var(--navy)}
+
+/* CONFIRMAÇÃO */
+.confirm-wrap{max-width:480px;margin:0 auto;padding:3rem 1.5rem;text-align:center}
+.confirm-icon{width:70px;height:70px;background:var(--white);border:2px solid var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:30px;color:var(--navy)}
+.confirm-title{font-family:var(--font-display);font-size:28px;color:var(--navy-deep);margin-bottom:0.5rem}
+.confirm-sub{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:1.5rem}
+.confirm-ref-box{background:var(--navy);border-radius:var(--r-lg);padding:1.25rem;margin-bottom:1.25rem;text-align:left}
+.confirm-ref-lbl{font-family:var(--font-cond);font-size:10px;letter-spacing:3px;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-bottom:0.4rem}
+.confirm-ref-val{font-family:var(--font-display);font-size:24px;color:white;font-weight:700}
+.pay-instr{background:var(--light);border-radius:var(--r-lg);padding:1.25rem;text-align:left;margin-bottom:1.5rem}
+.pay-instr h4{font-family:var(--font-cond);font-size:11px;letter-spacing:2px;color:var(--navy);text-transform:uppercase;margin-bottom:0.75rem}
+.pay-instr p,.pay-instr li{font-size:13px;color:var(--muted);line-height:1.8}
+.pay-instr ul{padding-left:1.25rem}
+.pay-instr strong{color:var(--navy-deep)}
+.btn-nova{background:var(--navy);color:white;border:none;padding:12px 28px;font-family:var(--font-cond);font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-radius:var(--r-lg);transition:all 0.2s}
+.btn-nova:hover{background:var(--navy-mid)}
+
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--muted)}
+.empty-state-icon{font-size:48px;opacity:0.2;margin-bottom:1rem}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy-deep);color:white;padding:10px 20px;border-radius:var(--r-pill);font-family:var(--font-cond);font-size:12px;letter-spacing:1px;opacity:0;transition:all 0.25s;z-index:999;border-left:3px solid var(--navy-light);white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:580px){.topbar{padding:0.5rem 1rem}.conj-btns{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-logo">
+    <div class="logo-n">N</div>
+    <div style="display:flex;flex-direction:column">
+      <div class="logo-name">Novélia</div>
+      <div class="logo-since">desde 1975</div>
+    </div>
+  </div>
+</div>
+
+<!-- LOJA -->
+<div class="view active" id="view-loja">
+  <div class="hero">
+    <div class="hero-tag">Coleção da semana</div>
+    <div class="hero-title" id="hero-title">Look da Semana</div>
+    <div class="hero-sub">Selecione as peças que deseja e encomende diretamente</div>
+  </div>
+  <div class="week-section">
+    <div class="section-label">Esta semana</div>
+    <div class="section-title" id="look-title-disp">A carregar...</div>
+    <div id="loja-loading" class="loading"><div class="spinner"></div><p>A carregar look</p></div>
+    <div id="loja-content" style="display:none">
+      <div class="look-grid">
+        <div>
+          <div class="look-img-wrap">
+            <div class="look-img-placeholder" id="img-placeholder"><span>👗</span><p>Sem imagem</p></div>
+            <img id="look-img" src="" alt="Look da semana" style="display:none">
+            <div class="week-badge" id="week-badge">Semana atual</div>
+            <div class="new-badge">Novo</div>
+          </div>
+          <p id="look-desc-disp" class="look-desc"></p>
+        </div>
+        <div class="pieces-side">
+          <div id="pieces-list"></div>
+          <div class="conjunto-bar">
+            <div class="conj-top">
+              <div>
+                <div class="conj-label">Total selecionado</div>
+                <div class="conj-price" id="total-price">0,00 €</div>
+                <div class="conj-portes" id="portes-info">+ 6,00 € portes</div>
+              </div>
+            </div>
+            <!-- ENTREGA: sempre visível -->
+            <div class="entrega-section">
+              <div class="entrega-section-title">Forma de entrega</div>
+              <div class="entrega-opts-row">
+                <label class="entrega-opt sel" id="opt-envio" onclick="escolherEntrega('envio')">
+                  <input type="radio" name="entrega" value="envio" checked>
+                  <span class="entrega-opt-icon">🚚</span>
+                  <div>
+                    <div class="entrega-opt-name">Envio Continental</div>
+                    <div class="entrega-opt-desc" id="desc-envio">+ 6,00 € portes</div>
+                  </div>
+                </label>
+                <label class="entrega-opt" id="opt-loja" onclick="escolherEntrega('loja')">
+                  <input type="radio" name="entrega" value="loja">
+                  <span class="entrega-opt-icon">🏪</span>
+                  <div>
+                    <div class="entrega-opt-name">Levantar em loja</div>
+                    <div class="entrega-opt-desc">Sem portes</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <div class="conj-btns">
+              <button class="btn-all" onclick="selectAll()">Conjunto completo</button>
+              <button class="btn-comprar" id="btn-comprar" onclick="goCheckout()" disabled>Encomendar →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="loja-error" style="display:none" class="empty-state">
+      <div class="empty-state-icon">⚠️</div>
+      <p>Não foi possível carregar o look.<br>Tente novamente mais tarde.</p>
+      <button class="btn-nova" onclick="loadFromSheets()" style="margin-top:1rem">Tentar novamente</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKOUT -->
+<div class="view" id="view-checkout">
+  <div class="checkout-wrap">
+    <button class="btn-back" onclick="goTo('loja')">← Voltar à loja</button>
+    <div class="ck-header"><h2>Finalizar Encomenda</h2><p>Preencha os seus dados para concluir a compra</p></div>
+    <div class="order-box">
+      <div class="order-box-title">Resumo da encomenda</div>
+      <div id="ck-items"></div>
+      <hr class="order-sep">
+      <div class="order-portes-row"><span>Portes de envio</span><span id="ck-portes">6,00 €</span></div>
+      <div class="order-total-row"><span class="order-total-lbl">Total</span><span class="order-total-val" id="ck-total">0,00 €</span></div>
+    </div>
+
+    <!-- Resumo da entrega escolhida -->
+    <div class="entrega-resumo" id="ck-entrega-resumo">
+      <span class="entrega-resumo-icon" id="ck-entrega-icon">🚚</span>
+      <div>
+        <div class="entrega-resumo-nome" id="ck-entrega-nome">Envio — Portugal Continental</div>
+        <div class="entrega-resumo-desc" id="ck-entrega-desc">Portes calculados</div>
+      </div>
+    </div>
+
+    <!-- Dados pessoais (sempre) -->
+    <div class="form-card">
+      <div class="form-card-title">Dados pessoais</div>
+      <div class="fg-row">
+        <div class="fg"><label>Nome completo *</label><input id="f-name" placeholder="Maria Silva"></div>
+        <div class="fg"><label>Email *</label><input id="f-email" type="email" placeholder="maria@email.com"></div>
+      </div>
+      <div class="fg"><label>Telemóvel *</label><input id="f-phone" placeholder="9XX XXX XXX"></div>
+      <div class="fg"><label>NIF (para fatura)</label><input id="f-nif" placeholder="Opcional"></div>
+    </div>
+
+    <!-- Morada (só envio) -->
+    <div class="form-card" id="card-morada" style="display:none">
+      <div class="form-card-title">Morada de envio</div>
+      <div class="fg"><label>Morada *</label><input id="f-addr" placeholder="Rua, número, andar"></div>
+      <div class="fg-row">
+        <div class="fg"><label>Código Postal *</label><input id="f-cp" placeholder="0000-000"></div>
+        <div class="fg"><label>Localidade *</label><input id="f-city" placeholder="Lisboa"></div>
+      </div>
+      <div class="fg"><label>Observações</label><textarea id="f-obs" placeholder="Notas adicionais..."></textarea></div>
+    </div>
+
+    <!-- Info loja (só levantamento) -->
+    <div class="form-card" id="card-loja" style="display:none">
+      <div class="form-card-title">Levantamento em loja</div>
+      <div class="loja-info-box">
+        <div class="loja-info-icon">📍</div>
+        <div>
+          <div class="loja-info-addr" id="loja-morada-texto">Contacte-nos para confirmar a morada</div>
+          <div class="loja-info-sub">Entraremos em contacto para confirmar disponibilidade e horário de levantamento.</div>
+        </div>
+      </div>
+      <div class="fg" style="margin-top:12px"><label>Observações</label><textarea id="f-obs-loja" placeholder="Notas adicionais..."></textarea></div>
+    </div>
+
+    <!-- Pagamento -->
+    <div class="form-card">
+      <div class="form-card-title">Forma de pagamento</div>
+      <div class="pay-opts" id="pay-opts-list">
+        <label class="pay-opt"><input type="radio" name="pay" value="transferencia" onchange="selPay(this)"><div><div class="pay-opt-name">Transferência Bancária</div><div class="pay-opt-desc">Receberá o IBAN no email de confirmação</div></div><span class="pay-opt-icon">🏦</span></label>
+        <label class="pay-opt"><input type="radio" name="pay" value="mbway" onchange="selPay(this)"><div><div class="pay-opt-name">MB Way</div><div class="pay-opt-desc">Pagamento imediato pelo telemóvel</div></div><span class="pay-opt-icon">📱</span></label>
+        <label class="pay-opt"><input type="radio" name="pay" value="multibanco" onchange="selPay(this)"><div><div class="pay-opt-name">Referência Multibanco</div><div class="pay-opt-desc">Receberá a referência no email de confirmação</div></div><span class="pay-opt-icon">🏧</span></label>
+      </div>
+    </div>
+    <button class="btn-submit" onclick="submitOrder()">Confirmar Encomenda</button>
+  </div>
+</div>
+
+<!-- CONFIRMAÇÃO -->
+<div class="view" id="view-confirm">
+  <div class="confirm-wrap">
+    <div class="confirm-icon">✓</div>
+    <div class="confirm-title">Encomenda recebida!</div>
+    <div class="confirm-sub" id="confirm-sub"></div>
+    <div class="confirm-ref-box"><div class="confirm-ref-lbl">Referência da encomenda</div><div class="confirm-ref-val" id="confirm-ref"></div></div>
+    <div class="pay-instr" id="pay-instr"></div>
+    <button class="btn-nova" onclick="goTo('loja')">Continuar a comprar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SHEETS_CSV='https://docs.google.com/spreadsheets/d/e/2PACX-1vRuqEqUsYhDEe3o_jIA08BlUCxtC3QNNJ7REVZh-x5a2Cx49VdhARExghvDkVlBFmxf3AxYT4jKsXvt/pub?gid=0&single=true&output=csv';
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwVY14lBMHkEsAko1E8NWDpVin72apIrxYTS_pERkmnYUbbShsHy8B98f63Nr_n94bG/exec';
+const SK='novelia_cfg_v1';
+
+function loadDB(){try{const r=localStorage.getItem(SK);return r?JSON.parse(r):{}}catch(e){return {}}}
+function saveDB(){try{localStorage.setItem(SK,JSON.stringify(db))}catch(e){}}
+let db=loadDB();
+if(!db.settings)db.settings={email:'clientes.novelia@gmail.com',portes:6,portesGratis:70,lojaAddr:'',payments:{transferencia:{ativo:true,iban:'',nome:''},mbway:{ativo:false,numero:''},multibanco:{ativo:false,entity:'',ref:''}}};
+saveDB();
+
+let look=null, cart={}, orderRef='';
+// entregaEscolhida: 'envio' ou 'loja' — gerido na página da loja
+let entregaEscolhida='envio';
+
+const fmt=v=>(+v).toLocaleString('pt-PT',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+const SIZES=['XS','S','M','L','XL'];
+
+// ── CONFIG DO SHEETS ──────────────────────────────────────────────────────────
+async function loadConfigFromSheets(){
+  try{
+    const r=await fetch(SCRIPT_URL+'?tipo=config&t='+Date.now());
+    const cfg=await r.json();
+    if(cfg&&Object.keys(cfg).length>0){
+      if(cfg.email)db.settings.email=cfg.email;
+      if(cfg.portes!==undefined && cfg.portes!==null && cfg.portes!=='')db.settings.portes=+cfg.portes;
+      if(cfg.portesGratis!==undefined && cfg.portesGratis!==null && cfg.portesGratis!=='')db.settings.portesGratis=+cfg.portesGratis;
+      if(cfg.lojaAddr!==undefined)db.settings.lojaAddr=cfg.lojaAddr;
+      if(cfg.payments)db.settings.payments=cfg.payments;
+      saveDB();
+    }
+  }catch(e){console.warn('Config Sheets indisponível:',e);}
+}
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
+function goTo(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  if(v==='loja') loadFromSheets();
+  window.scrollTo(0,0);
+}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2600);}
+
+// ── ENTREGA (na página da loja) ───────────────────────────────────────────────
+function escolherEntrega(tipo){
+  entregaEscolhida=tipo;
+  // Visual
+  document.getElementById('opt-envio').classList.toggle('sel', tipo==='envio');
+  document.getElementById('opt-loja').classList.toggle('sel', tipo==='loja');
+  // Radio
+  document.querySelectorAll('input[name=entrega]').forEach(r=>r.checked=r.value===tipo);
+  // Atualizar totais
+  updateTotal();
+}
+
+// ── SHEETS ────────────────────────────────────────────────────────────────────
+function splitCSVLine(line){
+  const result=[];let cur='';let inQ=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(c==='"'){inQ=!inQ;}
+    else if(c===','&&!inQ){result.push(cur.trim());cur='';}
+    else{cur+=c;}
+  }
+  result.push(cur.trim());
+  return result.map(v=>v.replace(/^"|"$/g,'').trim());
+}
+function parseCSV(text){
+  const lines=text.trim().split('\n');
+  if(lines.length<2)return null;
+  const headers=splitCSVLine(lines[0]);
+  const vals=splitCSVLine(lines[1]);
+  const row={};
+  headers.forEach((h,i)=>row[h]=vals[i]||'');
+  return row;
+}
+function buildLook(row){
+  if(!row||!row.titulo)return null;
+  const pieces=[];
+  for(let n=1;n<=5;n++){
+    const nome=row[`p${n}_nome`];
+    if(!nome)continue;
+    const sizes={};
+    SIZES.forEach(sz=>sizes[sz]=parseInt((row[`p${n}_${sz.toLowerCase()}`]||'').replace(/[^0-9]/g,''))||0);
+    pieces.push({name:nome,ref:row[`p${n}_ref`]||'',price:parseFloat((row[`p${n}_preco`]||'').replace(/[€\s]/g,'').replace(',','.'))||0,sizes});
+  }
+  return{title:row.titulo,week:row.semana,desc:row.descricao,image:row.imagem_url,pieces};
+}
+
+async function loadEncomendas(){
+  try{const r=await fetch(SCRIPT_URL+'?tipo=encomendas&t='+Date.now());const data=await r.json();return Array.isArray(data)?data:[];}
+  catch(e){console.warn('Erro encomendas:',e);return [];}
+}
+function calcStock(look,encomendas){
+  if(!look||!look.pieces)return look;
+  const vendas={};
+  encomendas.forEach(enc=>{const key=`${enc.peca}__${enc.tamanho}`;vendas[key]=(vendas[key]||0)+(+enc.quantidade||1);});
+  look.pieces=look.pieces.map(p=>{
+    const sizes={};
+    Object.entries(p.sizes).forEach(([sz,qty])=>{const key=`${p.name}__${sz}`;sizes[sz]=Math.max(0,(+qty||0)-(vendas[key]||0));});
+    return{...p,sizes};
+  });
+  return look;
+}
+
+async function loadFromSheets(){
+  document.getElementById('loja-loading').style.display='flex';
+  document.getElementById('loja-content').style.display='none';
+  document.getElementById('loja-error').style.display='none';
+  await loadConfigFromSheets();
+  try{
+    let text;
+    try{
+      const r=await fetch(SHEETS_CSV+'&nocache='+Date.now(),{cache:'no-store'});
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      text=await r.text();
+    }catch(e){
+      // Tentar proxies alternativos
+      const proxies=[
+        'https://corsproxy.io/?'+encodeURIComponent(SHEETS_CSV),
+        'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(SHEETS_CSV),
+        'https://api.allorigins.win/raw?url='+encodeURIComponent(SHEETS_CSV)
+      ];
+      let ok=false;
+      for(const proxy of proxies){
+        try{
+          const r2=await fetch(proxy);
+          if(r2.ok){text=await r2.text();ok=true;break;}
+        }catch(ex){continue;}
+      }
+      if(!ok)throw new Error('Todos os proxies falharam');
+    }
+    const row=parseCSV(text);
+    look=buildLook(row);
+    if(!look||!look.title)throw new Error('Sem dados');
+    const encomendas=await loadEncomendas();
+    look=calcStock(look,encomendas);
+    document.getElementById('loja-loading').style.display='none';
+    document.getElementById('loja-content').style.display='block';
+    renderLook();
+  }catch(e){
+    document.getElementById('loja-loading').style.display='none';
+    document.getElementById('loja-error').style.display='block';
+  }
+}
+
+function convertDriveUrl(url){
+  if(!url)return '';
+  const m=url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if(m)return'https://drive.google.com/uc?export=view&id='+m[1];
+  const m2=url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if(m2)return'https://drive.google.com/uc?export=view&id='+m2[1];
+  return url;
+}
+
+function renderLook(){
+  if(!look)return;
+  document.getElementById('look-title-disp').textContent=look.title||'Look da semana';
+  document.getElementById('hero-title').textContent=look.title||'Look da Semana';
+  document.getElementById('look-desc-disp').textContent=look.desc||'';
+  document.getElementById('week-badge').textContent=look.week||'Semana atual';
+  const imgUrl=convertDriveUrl(look.image);
+  const imgEl=document.getElementById('look-img');
+  const phEl=document.getElementById('img-placeholder');
+  if(imgUrl){imgEl.src=imgUrl;imgEl.style.display='block';phEl.style.display='none';imgEl.onerror=()=>{imgEl.style.display='none';phEl.style.display='flex';};}
+  else{imgEl.style.display='none';phEl.style.display='flex';}
+  cart={};
+  entregaEscolhida='envio';
+  escolherEntrega('envio');
+  renderPieces();
+}
+
+function renderPieces(){
+  const el=document.getElementById('pieces-list');
+  if(!look||!look.pieces.length){el.innerHTML='<div class="empty-state"><div class="empty-state-icon">👗</div><p>Nenhuma peça disponível.</p></div>';return;}
+  el.innerHTML=look.pieces.map((p,i)=>{
+    const total=Object.values(p.sizes).reduce((s,v)=>s+(+v||0),0);
+    const isOut=total===0;
+    const sel=cart[i];
+    const sCls=isOut?'sout':total<=3?'slow':'sok';
+    const sTxt=isOut?'Esgotado':total<=3?`Últimas ${total}`:`${total} un.`;
+    const szBtns=SIZES.map(sz=>{
+      const has=(+p.sizes[sz])>0;
+      const isSel=sel&&sel.size===sz;
+      return`<button class="sz-btn${isSel?' sz-sel':''}${!has?' sz-no':''}" onclick="event.stopPropagation();selectSize(${i},'${sz}',${has})" ${!has?'disabled':''}>${sz}</button>`;
+    }).join('');
+    return`<div class="piece-card${sel?' selected':''}${isOut?' out':''}" onclick="${isOut?'void(0)':'togglePiece('+i+')'}">
+      <div class="piece-top">
+        <div class="piece-check">${sel?'✓':''}</div>
+        <div class="piece-info"><div class="piece-name">${p.name}</div><div class="piece-ref">Ref: ${p.ref||'—'}</div></div>
+        <div class="piece-right"><div class="piece-price">${fmt(p.price)}</div><div class="piece-stock ${sCls}">${sTxt}</div></div>
+      </div>
+      <div class="sizes-row">${szBtns}</div>
+    </div>`;
+  }).join('');
+  updateTotal();
+}
+
+function togglePiece(i){
+  const p=look.pieces[i];
+  const total=Object.values(p.sizes).reduce((s,v)=>s+(+v||0),0);
+  if(total===0)return;
+  if(cart[i]){delete cart[i];}
+  else{const first=SIZES.find(s=>+p.sizes[s]>0)||SIZES[0];cart[i]={name:p.name,price:p.price,size:first,ref:p.ref||''};}
+  renderPieces();
+}
+function selectSize(i,sz,has){
+  if(!has)return;
+  if(!cart[i]){const p=look.pieces[i];cart[i]={name:p.name,price:p.price,size:sz,ref:p.ref||''};}
+  else cart[i].size=sz;
+  renderPieces();
+}
+function selectAll(){
+  if(!look)return;
+  look.pieces.forEach((p,i)=>{
+    const total=Object.values(p.sizes).reduce((s,v)=>s+(+v||0),0);
+    if(total>0&&!cart[i]){const first=SIZES.find(s=>+p.sizes[s]>0)||SIZES[0];cart[i]={name:p.name,price:p.price,size:first,ref:p.ref||''};}
+  });
+  renderPieces();
+}
+
+function updateTotal(){
+  const items=Object.values(cart);
+  const sub=items.reduce((s,i)=>s+i.price,0);
+  const portesVal=(db.settings.portes!==undefined&&db.settings.portes!==null)?+db.settings.portes:6;
+  const portesGratis=(db.settings.portesGratis!==undefined&&db.settings.portesGratis!==null)?+db.settings.portesGratis:70;
+  const isLoja=entregaEscolhida==='loja';
+  const portes=isLoja?0:(sub>0&&sub>=portesGratis?0:portesVal);
+  document.getElementById('total-price').textContent=fmt(sub);
+  if(isLoja){
+    document.getElementById('portes-info').textContent='Levantamento em loja — sem portes ✓';
+  }else{
+    document.getElementById('portes-info').textContent=sub>=portesGratis&&sub>0?'Portes grátis ✓':`+ ${fmt(portesVal)} portes`;
+  }
+  // Descrição no botão de envio
+  const descEnvio=document.getElementById('desc-envio');
+  if(descEnvio)descEnvio.textContent=sub>=portesGratis&&sub>0?'Portes grátis ✓':`+ ${fmt(portesVal)} portes`;
+  document.getElementById('btn-comprar').disabled=items.length===0;
+}
+
+// ── CHECKOUT ──────────────────────────────────────────────────────────────────
+function goCheckout(){
+  const items=Object.values(cart);
+  if(!items.length){toast('Selecione pelo menos uma peça');return;}
+  const sub=items.reduce((s,i)=>s+i.price,0);
+  const portesVal=(db.settings.portes!==undefined&&db.settings.portes!==null)?+db.settings.portes:6;
+  const portesGratis=(db.settings.portesGratis!==undefined&&db.settings.portesGratis!==null)?+db.settings.portesGratis:70;
+  const isLoja=entregaEscolhida==='loja';
+  const portes=isLoja?0:(sub>=portesGratis?0:portesVal);
+  const total=sub+portes;
+
+  // Resumo itens
+  document.getElementById('ck-items').innerHTML=items.map(it=>`
+    <div class="order-line">
+      <div><div class="order-line-name">${it.name}</div><div class="order-line-sz">Tamanho: ${it.size}</div></div>
+      <div class="order-line-price">${fmt(it.price)}</div>
+    </div>`).join('');
+  document.getElementById('ck-portes').textContent=portes===0?'Grátis':fmt(portes);
+  document.getElementById('ck-total').textContent=fmt(total);
+
+  // Resumo entrega
+  document.getElementById('ck-entrega-icon').textContent=isLoja?'🏪':'🚚';
+  document.getElementById('ck-entrega-nome').textContent=isLoja?'Levantamento em loja':'Envio — Portugal Continental';
+  document.getElementById('ck-entrega-desc').textContent=isLoja?'Sem portes':(portes===0?'Portes grátis':fmt(portes)+' portes');
+
+  // Mostrar/ocultar morada vs loja
+  document.getElementById('card-morada').style.display=isLoja?'none':'block';
+  document.getElementById('card-loja').style.display=isLoja?'block':'none';
+  if(isLoja){
+    const lojaAddr=db.settings.lojaAddr||'Contacte-nos para confirmar a morada';
+    document.getElementById('loja-morada-texto').textContent=lojaAddr;
+  }
+
+  // Métodos de pagamento conforme admin
+  const pay=db.settings.payments||{};
+  ['transferencia','mbway','multibanco'].forEach(key=>{
+    const el=document.querySelector(`input[value="${key}"]`);
+    if(el)el.closest('.pay-opt').style.display=(pay[key]&&pay[key].ativo)?'flex':'none';
+  });
+
+  // Reset pagamento
+  document.querySelectorAll('input[name=pay]').forEach(r=>r.checked=false);
+  document.querySelectorAll('.pay-opt').forEach(o=>o.classList.remove('sel'));
+
+  goTo('checkout');
+}
+
+function selPay(el){
+  document.querySelectorAll('.pay-opt').forEach(o=>o.classList.remove('sel'));
+  el.closest('.pay-opt').classList.add('sel');
+}
+
+async function submitOrder(){
+  const name=document.getElementById('f-name').value.trim();
+  const email=document.getElementById('f-email').value.trim();
+  const phone=document.getElementById('f-phone').value.trim();
+  const nif=document.getElementById('f-nif').value.trim();
+  const isLoja=entregaEscolhida==='loja';
+  const addr=isLoja?'':(document.getElementById('f-addr').value.trim());
+  const cp=isLoja?'':(document.getElementById('f-cp').value.trim());
+  const city=isLoja?'':(document.getElementById('f-city').value.trim());
+  const obs=isLoja?(document.getElementById('f-obs-loja').value.trim()):(document.getElementById('f-obs').value.trim());
+  const payEl=document.querySelector('input[name=pay]:checked');
+
+  if(!name||!email||!phone){toast('Preencha nome, email e telemóvel (*)');return;}
+  if(!isLoja&&(!addr||!cp||!city)){toast('Preencha a morada de envio completa (*)');return;}
+  if(!payEl){toast('Selecione uma forma de pagamento');return;}
+
+  const payMethod=payEl.value;
+  const items=Object.values(cart);
+  const sub=items.reduce((s,i)=>s+i.price,0);
+  const portesVal=(db.settings.portes!==undefined&&db.settings.portes!==null)?+db.settings.portes:6;
+  const portesGratis=(db.settings.portesGratis!==undefined&&db.settings.portesGratis!==null)?+db.settings.portesGratis:70;
+  const portes=isLoja?0:(sub>=portesGratis?0:portesVal);
+  const total=sub+portes;
+  orderRef='NOV-'+Date.now().toString().slice(-6);
+  const payInst=buildPayInst(payMethod,total);
+  const pecasTxt=items.map(i=>`- ${i.name} (Tam. ${i.size}) Ref: ${i.ref||'—'}: ${fmt(i.price)}`).join('\n');
+  const moradaTxt=isLoja?`Levantamento em loja${db.settings.lojaAddr?' — '+db.settings.lojaAddr:''}`:`${addr}, ${cp} ${city}`;
+  const storeEmail=db.settings.email||'clientes.novelia@gmail.com';
+
+  const btnSubmit=document.querySelector('.btn-submit');
+  btnSubmit.textContent='A enviar...';btnSubmit.disabled=true;
+
+  try{
+    await emailjs.send('Novelia 1975','template_91ild93',{
+      cliente_nome:name,cliente_email:email,ref:orderRef,
+      pecas:pecasTxt,portes:fmt(portes),total:fmt(total),
+      instrucoes_pagamento:payInst.text,morada:moradaTxt
+    });
+    await emailjs.send('Novelia 1975','template_k9vxetb',{
+      loja_email:storeEmail,ref:orderRef,data:new Date().toLocaleString('pt-PT'),
+      cliente_nome:name,cliente_email:email,telefone:phone,nif:nif||'—',
+      morada:moradaTxt,pecas:pecasTxt,portes:fmt(portes),total:fmt(total),
+      metodo_pagamento:payMethod.toUpperCase(),obs:obs||'—'
+    });
+    // Registar stock
+    await Promise.all(items.map(it=>fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({tipo:'encomenda',ref:orderRef,nome:it.name,email:'',peca:it.name,tamanho:it.size,quantidade:1})})));
+    btnSubmit.textContent='Confirmar Encomenda';btnSubmit.disabled=false;
+    document.getElementById('confirm-ref').textContent=orderRef;
+    document.getElementById('confirm-sub').textContent=`Obrigada, ${name}! Enviámos a confirmação para ${email}.`;
+    document.getElementById('pay-instr').innerHTML=`<h4>Como pagar</h4>${payInst.html}`;
+    cart={};goTo('confirm');
+  }catch(err){
+    console.error('Erro:',err);
+    btnSubmit.textContent='Confirmar Encomenda';btnSubmit.disabled=false;
+    toast('Erro ao enviar. Verifique a ligação e tente novamente.');
+  }
+}
+
+function buildPayInst(method,total){
+  const p=db.settings.payments||{};
+  if(method==='mbway'){const num=(p.mbway&&p.mbway.numero)||'(a configurar)';return{
+    text:`Envie ${fmt(total)} via MB Way para ${num}. Ref: ${orderRef}`,
+    html:`<p>Envie <strong>${fmt(total)}</strong> via MB Way para:</p><p style="font-size:20px;font-weight:700;color:var(--navy);margin:8px 0">${num}</p><p>Indique a referência <strong>${orderRef}</strong>.</p>`
+  };}
+  if(method==='transferencia'){const iban=(p.transferencia&&p.transferencia.iban)||'(a configurar)';const nome=(p.transferencia&&p.transferencia.nome)||'';return{
+    text:`Transferência de ${fmt(total)} para IBAN: ${iban}. Ref: ${orderRef}`,
+    html:`<p>Transferência de <strong>${fmt(total)}</strong> para:</p>${nome?`<p style="font-size:13px;color:var(--muted);margin:4px 0">Titular: <strong>${nome}</strong></p>`:''}<p style="font-size:14px;font-weight:700;color:var(--navy);margin:8px 0;word-break:break-all">${iban}</p><p>Ref: <strong>${orderRef}</strong></p>`
+  };}
+  const ent=(p.multibanco&&p.multibanco.entity)||'?';const ref=(p.multibanco&&p.multibanco.ref)||'?';
+  return{
+    text:`Multibanco — Entidade: ${ent} · Ref: ${ref} · Valor: ${fmt(total)}`,
+    html:`<ul><li>Entidade: <strong>${ent}</strong></li><li>Referência: <strong>${ref}</strong></li><li>Valor: <strong>${fmt(total)}</strong></li></ul>`
+  };
+}
+
+loadFromSheets();
+</script>
+</body>
+</html>
